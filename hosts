@@ -1,0 +1,13 @@
+[db]
+192.168.26.130
+
+[chengdu_EPG]
+cd_epg_3 ansible_ssh_port=41003
+cd_epg_4 ansible_ssh_port=41004 
+cd_epg_86 ansible_ssh_port=41086
+
+[chengdu_EPG:vars]
+ansible_ssh_user=root
+ansible_ssh_host=admin.tv-cloud.cn
+
+

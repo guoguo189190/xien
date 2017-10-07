@@ -1,0 +1,51 @@
+---
+# This role contains common plays that will run on all nodes.
+
+- name: Create the repository for EPEL
+  copy: 
+      src: epel.repo 
+      dest: /etc/yum.repos.d/epel.repo
+
+- name: Create the GPG key for EPEL
+  copy: 
+      src: RPM-GPG-KEY-EPEL-6 
+      dest: /etc/pki/rpm-gpg
+
+- name: test to see if selinux is running
+  service: 
+       name: "{{ item }}"
+       state: stopped 
+       enabled: no
+  with_items:
+      - ip6tables
+      - postfix
+      - iptables 
+
+- name: disabled selinux
+  lineinfile:
+      name: /etc/selinux/config
+      regexp: '^SELINUX='
+      line: 'SELINUX=disabled'
+
+- name:  limit max file
+  lineinfile:
+      name: /etc/security/limits.conf
+      insertbefore: 
+      line: |
+         * soft nofile 65535
+         * hard nofile 65535
+         * soft nproc  65535
+         * hard nproc  65535
+
+- name: GSSAPI off 
+  lineinfile:
+      name: /etc/ssh/sshd_config
+      regexp: 'GSSAPIAuthentication yes'
+      line: 'GSSAPIAuthentication no'
+
+- name: dns resolve off
+  lineinfile:
+      name: /etc/ssh/sshd_config
+      regexp: '#UseDNS yes' 
+      line: 'UseDNS no' 
+

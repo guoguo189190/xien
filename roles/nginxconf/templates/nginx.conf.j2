@@ -1,0 +1,35 @@
+upstream live.backend {
+	server 101.36.99.134:5460;
+	server 101.36.99.140:5460;
+}
+upstream back.backend {
+    server 10.255.199.133:1220;
+    server 10.255.199.134:1220;
+}
+
+{% for proxy in nginx_proxies %}
+upstream {{ proxy.name }} {
+    {% for ipaddr in nginx_proxies.host_ip %}
+    server {{ ipaddr }}:{{ proxy.port }};
+    {% endfor %}
+{% endfor %}
+
+server {
+	listen 5460 default_server;
+	root html;
+	index index.html index.htm;
+{% for proxy in nginx_proxies %}	
+	location ~ /(luzhi[0-9])/vd[a-z]+/live/c[0-9]+/now/.*.m3u8$ {
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_pass http://live.backend;
+		proxy_cache_key $uri;
+		proxy_cache cache_live;
+		proxy_cache_valid {{   }};
+		#proxy_cache_lock on;
+		proxy_cache_lock_timeout 5s;
+		access_log /export/var/logs/nginx/access.log proxy;
+		error_log /export/var/logs/nginx/error.log error;
+	}
+{% endfor %}
+}

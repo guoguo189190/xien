@@ -1,0 +1,18 @@
+nginx_proxies:
+  - name: live.backend
+    port: 5460
+    location:
+      - { path: '/(luzhi[0-9])/vd[a-z]+/live/c[0-9]+/now/.*.m3u8$', cache_valid_time: '4s' }
+      - { path: '/(luzhi[0-9])/vd[a-z]+/live/c[0-9]+/now/.*.ts$', cache_valid_time: '1m' }
+    host_ip:
+      - 10.255.199.133
+      - 10.255.199.134
+
+  - name: back.backend
+    port: 1220
+    location:
+      - { path: '/(luzhi[0-9])/vd[a-z]+/live/c[0-9]+/epg/.*.m3u8$', cache_valid_time: '3h' }
+      - { path: '/(luzhi[0-9])/.*.ts$', cache_valid_time: '7d' } 
+    host_ip:
+      - 10.255.199.133    
+      - 10.255.199.134    
